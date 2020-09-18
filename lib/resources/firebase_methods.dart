@@ -1,6 +1,8 @@
 import 'dart:core';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:skype_clone/constants/string.dart';
 import 'package:skype_clone/models/message.dart';
@@ -14,6 +16,8 @@ class FirebaseMethods {
 
   //user class
   User user = User();
+
+  StorageReference _storageReference;
 
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser currentUser;
@@ -95,5 +99,54 @@ class FirebaseMethods {
         .document(message.receiverId)
         .collection(message.senderId)
         .add(map);
+  }
+
+  Future<String> upLoadImageToStorage(File image) async {
+    try {
+      _storageReference = FirebaseStorage.instance
+          .ref()
+          .child('${DateTime.now().millisecondsSinceEpoch}');
+      StorageUploadTask _storageuploadtask = _storageReference.putFile(image);
+
+      var url =
+          await (await _storageuploadtask.onComplete).ref.getDownloadURL();
+
+      return url;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  void setImageMsg(String url, String receiverId, senderId) async {
+    Message _message = Message();
+    _message = Message.imageMessage(
+      message: "IMAGE",
+      receiverId: receiverId,
+      senderId: senderId,
+      photoUrl: url,
+      timestamp: Timestamp.now(),
+      type: 'image',
+    );
+
+    var map = _message.toImageMap();
+
+    await firestore
+        .collection(MESSAGES_COLLECTION)
+        .document(_message.senderId)
+        .collection(_message.receiverId)
+        .add(map);
+
+    await firestore
+        .collection(MESSAGES_COLLECTION)
+        .document(_message.receiverId)
+        .collection(_message.senderId)
+        .add(map);
+  }
+
+  void upLoadImage(File image, String receiverId, String senderId) async {
+    String url = await upLoadImageToStorage(image);
+
+    setImageMsg(url, receiverId, senderId);
   }
 }

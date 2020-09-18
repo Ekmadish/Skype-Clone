@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker/emoji_picker.dart';
@@ -340,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
           isWriting
               ? Container()
               : GestureDetector(
-                  onTap: () {}, //() => //pickImage(ImageSource.camera),
+                  onTap: () => pickImage(source: ImageSource.camera),
                   child: Icon(Icons.camera_alt)),
           isWriting
               ? Container(
@@ -384,7 +385,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   pickImage({@required ImageSource source}) async {
-    //  File selectedImage = await Utils.pickImage(source);
+    File selectedImage = await Utils.pickImage(source: source);
+
+    _repository.upLoadImage(
+      image: selectedImage,
+      receiverId: widget.receiver.uid,
+      senderId: _currentUserId,
+    );
   }
 
   CustomAppBar customAppBar(context) {
