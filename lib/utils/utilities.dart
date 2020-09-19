@@ -19,16 +19,18 @@ class Utils {
 
   static Future<File> pickImage({@required ImageSource source}) async {
     File selectedImage = await ImagePicker.pickImage(source: source);
-    return compressImage(selectedImage);
+    return await compressImage(selectedImage);
   }
 
-  static Future<File> compressImage(File imageToCopress) async {
+  static Future<File> compressImage(File imageToCompress) async {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
-    int random = Random().nextInt(1000);
-    Im.Image image = Im.decodeImage(imageToCopress.readAsBytesSync());
+    int rand = Random().nextInt(10000);
+
+    Im.Image image = Im.decodeImage(imageToCompress.readAsBytesSync());
     Im.copyResize(image, width: 500, height: 500);
-    return new File('$path/img_$random.jpg')
+
+    return new File('$path/img_$rand.jpg')
       ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
   }
 }

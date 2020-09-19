@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:skype_clone/constants/string.dart';
 import 'package:skype_clone/models/message.dart';
 import 'package:skype_clone/models/user.dart';
+import 'package:skype_clone/provider/image_upload_provider.dart';
 import 'package:skype_clone/utils/utilities.dart';
 
 class FirebaseMethods {
@@ -19,10 +21,21 @@ class FirebaseMethods {
 
   StorageReference _storageReference;
 
+  static final CollectionReference _userCollection =
+      firestore.collection(USERS_COLLECTION);
+
   Future<FirebaseUser> getCurrentUser() async {
     FirebaseUser currentUser;
     currentUser = await _auth.currentUser();
     return currentUser;
+  }
+
+  Future<User> getUserDetails() async {
+    FirebaseUser currentUser = await getCurrentUser();
+    DocumentSnapshot documentSnapshot =
+        await _userCollection.document(currentUser.uid).get();
+
+    return User.fromMap(documentSnapshot.data);
   }
 
   Future<FirebaseUser> signIn() async {
@@ -63,10 +76,16 @@ class FirebaseMethods {
         .setData(user.toMap(user));
   }
 
-  Future<void> signOut() async {
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signIn();
-    return await _auth.signOut();
+  Future<bool> signOut() async {
+    try {
+      await _googleSignIn.disconnect();
+      await _googleSignIn.signIn();
+      await _auth.signOut();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
   Future<List<User>> fetchAllUsers(FirebaseUser currentUser) async {
@@ -110,7 +129,7 @@ class FirebaseMethods {
 
       var url =
           await (await _storageuploadtask.onComplete).ref.getDownloadURL();
-
+      print(url);
       return url;
     } catch (e) {
       print(e);
@@ -144,8 +163,12 @@ class FirebaseMethods {
         .add(map);
   }
 
-  void upLoadImage(File image, String receiverId, String senderId) async {
+  void upLoadImage(File image, String receiverId, String senderId,
+      ImageUploadProvider imageUploadProvider) async {
+    imageUploadProvider.setToLoding();
     String url = await upLoadImageToStorage(image);
+
+    imageUploadProvider.setToIdel();
 
     setImageMsg(url, receiverId, senderId);
   }

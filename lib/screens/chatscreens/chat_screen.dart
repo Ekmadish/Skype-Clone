@@ -6,10 +6,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:skype_clone/constants/string.dart';
+import 'package:skype_clone/enum/view_state.dart';
 import 'package:skype_clone/models/message.dart';
 import 'package:skype_clone/models/user.dart';
+import 'package:skype_clone/provider/image_upload_provider.dart';
 import 'package:skype_clone/resources/firebase_repository.dart';
+import 'package:skype_clone/screens/chatscreens/widgets/cached_image.dart';
+import 'package:skype_clone/utils/call_utils.dart';
+import 'package:skype_clone/utils/permission.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
 import 'package:skype_clone/utils/utilities.dart';
 import 'package:skype_clone/widget/appbar.dart';
@@ -32,6 +38,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isWriting = false;
   bool showEmojiPicker = false;
   ScrollController _listScrollController = ScrollController();
+
+  ImageUploadProvider _imageUploadProvider;
 
   FocusNode textFieldFocus = FocusNode();
 
@@ -66,12 +74,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _imageUploadProvider = Provider.of<ImageUploadProvider>(context);
     return Scaffold(
       backgroundColor: UniversalVariables.blackColor,
       appBar: customAppBar(context),
       body: Column(
         children: [
           Flexible(child: messageList()),
+          _imageUploadProvider.getViewState == ViewState.LOADING
+              ? Container(
+                  alignment: Alignment.centerRight,
+                  margin: EdgeInsets.only(right: 15),
+                  child: CircularProgressIndicator(),
+                )
+              : Container(),
           chatControls(),
           showEmojiPicker
               ? Container(
@@ -173,10 +189,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   getMessage(Message message) {
-    return Text(
-      message.message,
-      style: TextStyle(color: Colors.white, fontSize: 16.0),
-    );
+    return message.type != MESSAGE_TYPE_IMAGE
+        ? Text(
+            message.message,
+            style: TextStyle(color: Colors.white, fontSize: 16.0),
+          )
+        : message.photoUrl != null
+            ? CachedImage(
+                message.photoUrl,
+                height: 250,
+                width: 250,
+                radius: 10,
+              )
+            : Text("URL was  null");
   }
 
   Widget receiverLayout(Message message) {
@@ -241,9 +266,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: ListView(
                   children: [
                     ModalTitle(
-                        title: "Media",
-                        subtitle: "Share photo and video",
-                        icon: Icons.image),
+                      title: "Media",
+                      subtitle: "Share photo and video",
+                      icon: Icons.image,
+                      onTap: () => pickImage(source: ImageSource.gallery),
+                    ),
                     ModalTitle(
                         title: "File", subtitle: "Share File", icon: Icons.tab),
                     ModalTitle(
@@ -386,18 +413,28 @@ class _ChatScreenState extends State<ChatScreen> {
 
   pickImage({@required ImageSource source}) async {
     File selectedImage = await Utils.pickImage(source: source);
-
     _repository.upLoadImage(
       image: selectedImage,
       receiverId: widget.receiver.uid,
       senderId: _currentUserId,
+      imageUploadProvider: _imageUploadProvider,
     );
   }
 
   CustomAppBar customAppBar(context) {
     return CustomAppBar(
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.video_call), onPressed: null),
+          IconButton(
+            icon: Icon(Icons.video_call),
+            onPressed: () async =>
+                await Permissions.cameraAndMicrophonePermissionsGranted()
+                    ? CallUtils.dial(
+                        from: sender,
+                        to: widget.receiver,
+                        context: context,
+                      )
+                    : {},
+          ),
           IconButton(icon: Icon(Icons.phone), onPressed: null),
         ],
         centerTitle: false,
@@ -415,9 +452,11 @@ class ModalTitle extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Function onTap;
 
   const ModalTitle(
       {Key key,
+      this.onTap,
       @required this.title,
       @required this.subtitle,
       @required this.icon})
@@ -428,6 +467,7 @@ class ModalTitle extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 15),
       child: CustomTitle(
+          onTap: onTap,
           mini: false,
           leading: Container(
             margin: EdgeInsets.only(right: 10),

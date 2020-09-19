@@ -52,6 +52,7 @@ class Message {
     _message.type = map['type'];
     _message.message = map['message'];
     _message.timestamp = map['timestamp'];
+    _message.photoUrl = map['photoUrl'];
     return _message;
   }
 }
