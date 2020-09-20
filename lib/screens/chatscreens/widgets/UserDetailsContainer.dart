@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skype_clone/models/user.dart';
 import 'package:skype_clone/provider/user_provider.dart';
+import 'package:skype_clone/resources/auth_methods.dart';
 import 'package:skype_clone/resources/firebase_methods.dart';
 import 'package:skype_clone/screens/chatscreens/widgets/ShimmeringLogo.dart';
 import 'package:skype_clone/screens/chatscreens/widgets/cached_image.dart';
@@ -15,8 +16,9 @@ class UserDetailsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FirebaseMethods _auth = FirebaseMethods();
+
     signOut() async {
-      final bool isLoggedOut = await _auth.signOut();
+      final bool isLoggedOut = await AuthMethods().signOut();
 
       if (isLoggedOut) {
         Navigator.pushAndRemoveUntil(

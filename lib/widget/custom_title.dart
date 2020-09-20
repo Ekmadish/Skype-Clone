@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
@@ -25,7 +26,7 @@ class CustomTitle extends StatelessWidget {
       this.trailing,
       this.mini = true,
       this.onLongPress,
-      this.onTap});
+      this.onTap, Stream<QuerySnapshot> stream});
 
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Im;
+import 'package:skype_clone/enum/user_state.dart';
 
 class Utils {
   static String getUsername(String email) {
@@ -15,6 +16,19 @@ class Utils {
     String firstNameInitial = nameSplit[0][0];
     String lastNameInitial = nameSplit[1][0];
     return firstNameInitial + lastNameInitial;
+  }
+
+  static int stateToNum(UserState userState) {
+    switch (userState) {
+      case UserState.Offline:
+        return 0;
+
+      case UserState.Online:
+        return 1;
+
+      default:
+        return 2;
+    }
   }
 
   static Future<File> pickImage({@required ImageSource source}) async {
