@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
 
-class CustomTitle extends StatelessWidget {
+class CustomTile extends StatelessWidget {
   final Widget leading;
   final Widget title;
   final Widget icon;
@@ -17,7 +15,7 @@ class CustomTitle extends StatelessWidget {
 
   final GestureLongPressCallback onLongPress;
 
-  const CustomTitle(
+  const CustomTile(
       {this.icon,
       @required this.leading,
       this.margin = const EdgeInsets.all(0),
@@ -26,7 +24,8 @@ class CustomTitle extends StatelessWidget {
       this.trailing,
       this.mini = true,
       this.onLongPress,
-      this.onTap, Stream<QuerySnapshot> stream});
+      this.onTap,
+      Stream<QuerySnapshot> stream});
 
   @override
   Widget build(BuildContext context) {

@@ -6,12 +6,12 @@ import 'package:skype_clone/provider/user_provider.dart';
 import 'package:skype_clone/resources/call_methods.dart';
 import 'package:skype_clone/screens/callscreens/pickup/pickup_screen.dart';
 
-class PickUpLayout extends StatelessWidget {
+class PickupLayout extends StatelessWidget {
   final Widget scaffold;
 
   final CallMethods callMethods = CallMethods();
 
-  PickUpLayout({this.scaffold, Key key}) : super(key: key);
+  PickupLayout({this.scaffold, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

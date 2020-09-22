@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:skype_clone/resources/firebase_repository.dart';
+import 'package:skype_clone/resources/auth_methods.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
 
 import 'home_screen.dart';
@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   bool isLoginPressed = false;
-  FirebaseRepository _repository = FirebaseRepository();
+  AuthMethods _authMethods = AuthMethods();
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     print("tring to perform login");
-    _repository.signIn().then((FirebaseUser user) {
+    _authMethods.signIn().then((FirebaseUser user) {
       print("something");
       if (user != null) {
         authenticateUser(user);
@@ -71,9 +71,9 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       isLoginPressed = false;
     });
-    _repository.authenticateUser(user).then((isNewUser) {
+    _authMethods.authenticateUser(user).then((isNewUser) {
       if (isNewUser) {
-        _repository.addDataToDb(user).then((value) {
+        _authMethods.addDataToDb(user).then((value) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
             return HomeScreen();

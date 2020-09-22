@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     double _lableFontSize = 10;
 
-    return PickUpLayout(
+    return PickupLayout(
       scaffold: Scaffold(
         backgroundColor: UniversalVariables.blackColor,
         body: PageView(

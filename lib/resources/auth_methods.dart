@@ -37,7 +37,7 @@ class AuthMethods {
   Future<User> getUserDetailsById(id) async {
     try {
       DocumentSnapshot documentSnapshot =
-          await _userCollection.document(id).get();
+      await _userCollection.document(id).get();
       return User.fromMap(documentSnapshot.data);
     } catch (e) {
       print(e);

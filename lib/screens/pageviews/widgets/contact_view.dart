@@ -7,7 +7,11 @@ import 'package:skype_clone/resources/auth_methods.dart';
 import 'package:skype_clone/resources/chat_methods.dart';
 import 'package:skype_clone/screens/chatscreens/chat_screen.dart';
 import 'package:skype_clone/screens/chatscreens/widgets/cached_image.dart';
+import 'package:skype_clone/screens/pageviews/widgets/online_dot_indicator.dart';
+import 'package:skype_clone/utils/universal_variables.dart';
 import 'package:skype_clone/widget/custom_title.dart';
+
+import 'last_message_container.dart';
 
 class ContactView extends StatelessWidget {
   final Contact contact;
@@ -47,7 +51,7 @@ class ViewLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return CustomTitle(
+    return CustomTile(
       mini: false,
       onTap: () => Navigator.push(
           context,
@@ -61,27 +65,26 @@ class ViewLayout extends StatelessWidget {
         style:
             TextStyle(color: Colors.white, fontFamily: "Arial", fontSize: 19),
       ),
-      //  subtitle: LastMessageContainer(
-      stream: _chatMethods.fetchLastMessageBetween(
-        senderId: userProvider.getUser.uid,
-        receiverId: contact.uid,
+      subtitle: LastMessageContainer(
+        stream: _chatMethods.fetchLastMessageBetween(
+          senderId: userProvider.getUser.uid,
+          receiverId: contact.uid,
+        ),
       ),
-    );
-    leading:
-    Container(
-      constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
-      child: Stack(
-        children: <Widget>[
-          CachedImage(
-            contact.profilePhoto,
-            radius: 80,
-            isRound: true,
-          ),
-          // OnlineDotIndicator(
-          // uid: contact.uid,
-          // ),
-        ],
-        // ),
+      leading: Container(
+        constraints: BoxConstraints(maxHeight: 60, maxWidth: 60),
+        child: Stack(
+          children: <Widget>[
+            CachedImage(
+              contact.profilePhoto,
+              radius: 80,
+              isRound: true,
+            ),
+            OnlineDotIndicator(
+              uid: contact.uid,
+            ),
+          ],
+        ),
       ),
     );
   }

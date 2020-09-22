@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skype_clone/constants/string.dart';
 import 'package:skype_clone/models/contact.dart';
 import 'package:skype_clone/models/message.dart';
-import 'package:meta/meta.dart';
+import 'package:skype_clone/models/user.dart';
 
 class ChatMethods {
   static final Firestore _firestore = Firestore.instance;
@@ -15,8 +15,7 @@ class ChatMethods {
       _firestore.collection(USERS_COLLECTION);
 
   Future<void> addMessageToDb(
-    Message message,
-  ) async {
+      Message message, User sender, User receiver) async {
     var map = message.toMap();
 
     await _messageCollection

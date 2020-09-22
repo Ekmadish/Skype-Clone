@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:skype_clone/resources/firebase_repository.dart';
-import 'package:skype_clone/screens/chatscreens/widgets/UserDetailsContainer.dart';
+import 'package:provider/provider.dart';
+import 'package:skype_clone/models/contact.dart';
+import 'package:skype_clone/provider/user_provider.dart';
+import 'package:skype_clone/resources/auth_methods.dart';
+import 'package:skype_clone/resources/chat_methods.dart';
+import 'package:skype_clone/screens/callscreens/pickup/pickup_layout.dart';
+import 'package:skype_clone/screens/pageviews/widgets/contact_view.dart';
 import 'package:skype_clone/screens/pageviews/widgets/new_chatbutton.dart';
+import 'package:skype_clone/screens/pageviews/widgets/quietBox.dart';
 import 'package:skype_clone/screens/pageviews/widgets/user_circle.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
 import 'package:skype_clone/utils/utilities.dart';
 import 'package:skype_clone/widget/appbar.dart';
-import 'package:skype_clone/widget/custom_title.dart';
 
 class ChatListScreen extends StatelessWidget {
   CustomAppBar customAppBar(BuildContext context) {
@@ -43,24 +49,49 @@ class ChatListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: UniversalVariables.blackColor,
-      appBar: customAppBar(context),
-      floatingActionButton: NewChatButton(),
-      // floatingActionButton: NewChatButton(),
-      body: ChatListContainer(),
+    return PickupLayout(
+      scaffold: Scaffold(
+        backgroundColor: UniversalVariables.blackColor,
+        appBar: customAppBar(context),
+        floatingActionButton: NewChatButton(),
+        body: ChatListContainer(),
+      ),
     );
   }
 }
 
 class ChatListContainer extends StatelessWidget {
+  final ChatMethods _chatMethods = ChatMethods();
+
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = Provider.of<UserProvider>(context);
+
     return Container(
-        child: ListView.builder(
-      padding: EdgeInsets.all(10),
-      itemCount: 2,
-      itemBuilder: (context, index) {},
-    ));
+      child: StreamBuilder<QuerySnapshot>(
+          stream: _chatMethods.fetchContacts(
+            userId: userProvider.getUser.uid,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var docList = snapshot.data.documents;
+
+              if (docList.isEmpty) {
+                return QuietBox();
+              }
+              return ListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: docList.length,
+                itemBuilder: (context, index) {
+                  Contact contact = Contact.fromMap(docList[index].data);
+
+                  return ContactView(contact);
+                },
+              );
+            }
+
+            return Center(child: CircularProgressIndicator());
+          }),
+    );
   }
 }
