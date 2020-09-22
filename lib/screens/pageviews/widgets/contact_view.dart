@@ -8,7 +8,6 @@ import 'package:skype_clone/resources/chat_methods.dart';
 import 'package:skype_clone/screens/chatscreens/chat_screen.dart';
 import 'package:skype_clone/screens/chatscreens/widgets/cached_image.dart';
 import 'package:skype_clone/screens/pageviews/widgets/online_dot_indicator.dart';
-import 'package:skype_clone/utils/universal_variables.dart';
 import 'package:skype_clone/widget/custom_title.dart';
 
 import 'last_message_container.dart';

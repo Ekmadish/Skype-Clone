@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skype_clone/models/contact.dart';
 import 'package:skype_clone/provider/user_provider.dart';
-import 'package:skype_clone/resources/auth_methods.dart';
 import 'package:skype_clone/resources/chat_methods.dart';
 import 'package:skype_clone/screens/callscreens/pickup/pickup_layout.dart';
 import 'package:skype_clone/screens/pageviews/widgets/contact_view.dart';
@@ -11,7 +10,6 @@ import 'package:skype_clone/screens/pageviews/widgets/new_chatbutton.dart';
 import 'package:skype_clone/screens/pageviews/widgets/quietBox.dart';
 import 'package:skype_clone/screens/pageviews/widgets/user_circle.dart';
 import 'package:skype_clone/utils/universal_variables.dart';
-import 'package:skype_clone/utils/utilities.dart';
 import 'package:skype_clone/widget/appbar.dart';
 
 class ChatListScreen extends StatelessWidget {

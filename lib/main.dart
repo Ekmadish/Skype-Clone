@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,28 +16,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // FirebaseRepository _repository = FirebaseRepository();
-  AuthMethods _authMethods = AuthMethods();
+  final AuthMethods _authMethods = AuthMethods();
+
   @override
   Widget build(BuildContext context) {
-    //_repository.signOut();
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => ImageUploadProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-        ),
+        ChangeNotifierProvider(create: (_) => ImageUploadProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
         title: "Skype Clone",
-        theme: ThemeData(brightness: Brightness.dark),
         debugShowCheckedModeBanner: false,
-        initialRoute: "/",
+        initialRoute: '/',
         routes: {
           '/search_screen': (context) => SearchScreen(),
         },
+        theme: ThemeData(brightness: Brightness.dark),
         home: FutureBuilder(
           future: _authMethods.getCurrentUser(),
           builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {

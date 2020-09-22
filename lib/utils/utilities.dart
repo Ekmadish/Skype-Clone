@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:image/image.dart' as Im;
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:image/image.dart' as Im;
 import 'package:skype_clone/enum/user_state.dart';
 
 class Utils {
@@ -18,20 +18,10 @@ class Utils {
     return firstNameInitial + lastNameInitial;
   }
 
-  static int stateToNum(UserState userState) {
-    switch (userState) {
-      case UserState.Offline:
-        return 0;
-
-      case UserState.Online:
-        return 1;
-
-      default:
-        return 2;
-    }
-  }
+  // this is new
 
   static Future<File> pickImage({@required ImageSource source}) async {
+    // ignore: deprecated_member_use
     File selectedImage = await ImagePicker.pickImage(source: source);
     return await compressImage(selectedImage);
   }
@@ -46,6 +36,19 @@ class Utils {
 
     return new File('$path/img_$rand.jpg')
       ..writeAsBytesSync(Im.encodeJpg(image, quality: 85));
+  }
+
+  static int stateToNum(UserState userState) {
+    switch (userState) {
+      case UserState.Offline:
+        return 0;
+
+      case UserState.Online:
+        return 1;
+
+      default:
+        return 2;
+    }
   }
 
   static UserState numToState(int number) {
